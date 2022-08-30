@@ -12,15 +12,15 @@ add_subdirectory(tests)
 set(BYTE_ORDER_FILE_PATH ${CMAKE_CURRENT_BINARY_DIR}/include/byte_order)
 set(BYTE_ORDER_FILE ${BYTE_ORDER_FILE_PATH}/ByteOrder.hpp)
 
-add_custom_target(generated_byte_order_header DEPENDS ${BYTE_ORDER_FILE})
-
 add_custom_command(
     OUTPUT ${BYTE_ORDER_FILE}
+    COMMAND cmake -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/tools/etc ${CMAKE_CURRENT_BINARY_DIR}/tools/etc
     COMMAND cmake -E make_directory ${BYTE_ORDER_FILE_PATH}
     COMMAND generate_byte_order_header > ${BYTE_ORDER_FILE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tools
     DEPENDS generate_byte_order_header)
 
+add_custom_target(generated_byte_order_header DEPENDS ${BYTE_ORDER_FILE})
 add_dependencies(byte_order generated_byte_order_header)
 
 target_sources(byte_order
