@@ -1,6 +1,8 @@
 #include <cstdint>
-#include <cstdio>
+#include <filesystem>
 #include <fstream>
+#include <iostream>
+#include <regex>
 #include <string>
 
 auto detect_byte_order() -> std::string
@@ -23,20 +25,31 @@ auto detect_byte_order() -> std::string
     return "unsupported";
 }
 
-auto main() -> int
+auto load_file(std::filesystem::path file) -> std::string
 {
-    const std::string file{"./etc/ByteOrder.hpp.in"};
     std::ifstream fin(file);
     if (!fin) {
+        return {};
+    }
+    return std::string(
+            std::istreambuf_iterator<char>{fin},
+            std::istreambuf_iterator<char>{});
+}
+
+auto main() -> int
+{
+    const std::filesystem::path file("./etc/ByteOrder.hpp.in");
+    const auto byte_order_header = load_file(file);
+    if (byte_order_header.empty()) {
         return -1;
     }
 
-    const std::string byte_order_header(
-            std::istreambuf_iterator<char>{fin},
-            std::istreambuf_iterator<char>{});
+    const auto byte_order = detect_byte_order();
 
-    auto byte_order = detect_byte_order();
-    std::printf(byte_order_header.c_str(), byte_order.c_str());
+    std::cout << std::regex_replace(
+            byte_order_header,
+            std::regex("@DETECTED_BYTE_ORDER@"),
+            byte_order);
 
     return 0;
 }

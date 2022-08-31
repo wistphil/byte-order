@@ -8,6 +8,7 @@ CMakeUserPresets.json
 .idea/
 .vs/
 .vscode/
+.cache
 
 # macOS files
 .DS_Store
