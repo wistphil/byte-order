@@ -12,3 +12,5 @@ target_link_libraries(byte_order_tests
             GTest::gtest
             GTest::gtest_main)
 
+add_test(NAME byte_order_tests COMMAND byte_order_tests)
+

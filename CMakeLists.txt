@@ -7,7 +7,6 @@ add_library(byte_order INTERFACE)
 add_library(byte_order::byte_order ALIAS byte_order)
 
 add_subdirectory(tools)
-add_subdirectory(tests)
 
 set(BYTE_ORDER_FILE_PATH ${CMAKE_CURRENT_BINARY_DIR}/include/byte_order)
 set(BYTE_ORDER_FILE ${BYTE_ORDER_FILE_PATH}/ByteOrder.hpp)
@@ -69,5 +68,10 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
     install(EXPORT byte_order-targets
         NAMESPACE byte_order::
         DESTINATION ${byte_order_INSTALL_CMAKEDIR})
+endif()
+
+include(CTest)
+if(BUILD_TESTING AND BYTE_ORDER_BUILD_TESTS)
+    add_subdirectory(tests)
 endif()
 
