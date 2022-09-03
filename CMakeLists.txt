@@ -3,6 +3,8 @@ project(byte-order VERSION 0.1.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
+string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}" is_top_level)
+
 add_library(byte_order INTERFACE)
 add_library(byte_order::byte_order ALIAS byte_order)
 
@@ -68,6 +70,10 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
     install(EXPORT byte_order-targets
         NAMESPACE byte_order::
         DESTINATION ${byte_order_INSTALL_CMAKEDIR})
+
+    if (is_top_level)
+        include(CPack)
+    endif()
 endif()
 
 include(CTest)
