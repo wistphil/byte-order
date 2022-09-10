@@ -50,7 +50,8 @@ struct IsInteger
 };
 
 template <typename T>
-auto swap_bytes_impl(T value) -> std::enable_if_t<std::is_trivially_copyable_v<T>, T>
+auto swap_bytes_impl(T value) ->
+        std::enable_if_t<std::has_unique_object_representations_v<T> || (std::is_same_v<double, T> && std::numeric_limits<double>::is_iec559), T>
 {
     std::uint8_t input_buf[sizeof(value)];
     std::memcpy(input_buf, &value, sizeof(value));
@@ -97,7 +98,13 @@ auto decode(std::uint8_t * src, ByteOrderT target_byte_order) -> std::enable_if_
 } // namespace detail
 
 template <typename T>
-auto swap_bytes(T value) -> std::enable_if_t<std::is_trivially_copyable_v<T>, T>
+auto swap_bytes(T value) -> std::enable_if_t<std::has_unique_object_representations_v<T>, T>
+{
+    return detail::swap_bytes_impl(value);
+}
+
+template <typename T>
+auto swap_bytes(T value) -> std::enable_if_t<std::is_same_v<double, T> && std::numeric_limits<double>::is_iec559, T>
 {
     return detail::swap_bytes_impl(value);
 }

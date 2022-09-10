@@ -2,6 +2,7 @@
 
 #include "byte_order/Codec.hpp"
 
+#include <array>
 #include <limits>
 
 namespace byte_order::tests {
@@ -136,6 +137,28 @@ TEST(CodecTests, encode_decode_big_uint64_t)
     std::uint64_t val{std::numeric_limits<std::uint64_t>::max()};
     std::uint64_t decoded = encode_decode_big(val);
     EXPECT_EQ(val, decoded);
+}
+
+TEST(CodecTests, swap_bytes_int32_t)
+{
+    const std::int32_t val = 0x11223344;
+    const std::int32_t swapped = 0x44332211;
+    EXPECT_EQ(swapped, swap_bytes(val));
+}
+
+TEST(CodecTests, swap_bytes_double)
+{
+    if constexpr (!std::numeric_limits<double>::is_iec559) {
+        return;
+    }
+
+    const double val = 1234567.1234567;
+    std::array<std::uint8_t, sizeof(val)> array{};
+    std::memcpy(&array[0], &val, sizeof(val));
+    std::reverse(array.begin(), array.end());
+    double swapped{0};
+    std::memcpy(&swapped, &array[0], sizeof(swapped));
+    EXPECT_DOUBLE_EQ(swapped, swap_bytes(val));
 }
 
 } // namespace byte_order::tests
