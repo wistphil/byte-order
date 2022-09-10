@@ -139,10 +139,45 @@ TEST(CodecTests, encode_decode_big_uint64_t)
     EXPECT_EQ(val, decoded);
 }
 
+TEST(CodecTests, swap_bytes_int16_t)
+{
+    const std::int16_t val = 0x1122;
+    const std::int16_t swapped = 0x2211;
+    EXPECT_EQ(swapped, swap_bytes(val));
+}
+
+TEST(CodecTests, swap_bytes_uint16_t)
+{
+    const std::uint16_t val = 0x1122;
+    const std::uint16_t swapped = 0x2211;
+    EXPECT_EQ(swapped, swap_bytes(val));
+}
+
 TEST(CodecTests, swap_bytes_int32_t)
 {
     const std::int32_t val = 0x11223344;
     const std::int32_t swapped = 0x44332211;
+    EXPECT_EQ(swapped, swap_bytes(val));
+}
+
+TEST(CodecTests, swap_bytes_uint32_t)
+{
+    const std::uint32_t val = 0x11223344;
+    const std::uint32_t swapped = 0x44332211;
+    EXPECT_EQ(swapped, swap_bytes(val));
+}
+
+TEST(CodecTests, swap_bytes_int64_t)
+{
+    const std::int64_t val = 0x1111111122222222;
+    const std::int64_t swapped = 0x2222222211111111;
+    EXPECT_EQ(swapped, swap_bytes(val));
+}
+
+TEST(CodecTests, swap_bytes_uint64_t)
+{
+    const std::uint64_t val = 0x1111111122222222;
+    const std::uint64_t swapped = 0x2222222211111111;
     EXPECT_EQ(swapped, swap_bytes(val));
 }
 

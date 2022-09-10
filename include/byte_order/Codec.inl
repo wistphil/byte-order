@@ -68,6 +68,54 @@ auto swap_bytes_impl(T value) ->
     return result;
 }
 
+#if (defined(__clang__) && __has_builtin(__builtin_bswap16))
+
+inline
+auto swap_bytes_impl(std::int16_t value) -> std::int16_t
+{
+    return static_cast<std::int16_t>(__builtin_bswap16(static_cast<std::uint16_t>(value)));
+}
+
+inline
+auto swap_bytes_impl(std::uint16_t value) -> std::uint16_t
+{
+    return __builtin_bswap16(value);
+}
+
+#endif
+
+#if (defined(__clang__) && __has_builtin(__builtin_bswap32))
+
+inline
+auto swap_bytes_impl(std::int32_t value) -> std::int32_t
+{
+    return static_cast<std::int32_t>(__builtin_bswap32(static_cast<std::uint32_t>(value)));
+}
+
+inline
+auto swap_bytes_impl(std::uint32_t value) -> std::uint32_t
+{
+    return __builtin_bswap32(value);
+}
+
+#endif
+
+#if (defined(__clang__) && __has_builtin(__builtin_bswap64))
+
+inline
+auto swap_bytes_impl(std::int64_t value) -> std::int64_t
+{
+    return static_cast<std::int64_t>(__builtin_bswap64(static_cast<std::uint64_t>(value)));
+}
+
+inline
+auto swap_bytes_impl(std::uint64_t value) -> std::uint64_t
+{
+    return __builtin_bswap64(value);
+}
+
+#endif
+
 template <typename T, typename = std::enable_if_t<IsInteger<T>::value>, typename ByteOrderT, typename = std::enable_if_t<IsByteOrderT<ByteOrderT>::value>>
 void encode(std::uint8_t * dst, T value, ByteOrderT target_byte_order)
 {
