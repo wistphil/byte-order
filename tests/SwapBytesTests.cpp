@@ -4,8 +4,19 @@
 
 #include <array>
 #include <limits>
+#include <string>
 
 namespace byte_order::tests {
+
+TEST(SwapBytesTests, check_byte_order_swap_bytes_msg)
+{
+#if defined(BYTE_ORDER_SWAP_BYTES_MSG)
+    const std::string msg(BYTE_ORDER_SWAP_BYTES_MSG);
+    EXPECT_TRUE(!msg.empty());
+#else
+    EXPECT_TRUE(false) << "Expected 'BYTE_ORDER_SWAP_BYTES_MSG' to be defined";
+#endif
+}
 
 TEST(SwapBytesTests, swap_bytes_int16_t)
 {

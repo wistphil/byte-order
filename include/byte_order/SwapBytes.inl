@@ -2,6 +2,12 @@
 
 #include <cstring>
 
+#if defined(__GNUC__)
+
+#define IS_REQUIRED_GNUC_VER (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8))
+
+#endif
+
 namespace byte_order {
 
 namespace detail {
@@ -77,7 +83,9 @@ auto swap_bytes(T value) -> std::enable_if_t<std::has_unique_object_representati
     return detail::swap_bytes_default(value);
 }
 
-#if (defined(__clang__) && __has_builtin(__builtin_bswap16))
+#if (defined(__clang__) && __has_builtin(__builtin_bswap16)) || (defined(__GNUC__) && IS_REQUIRED_GNUC_VER)
+
+#define BYTE_ORDER_SWAP_BYTES_MSG "__builtin_bswap"
 
 auto swap_bytes(std::int16_t value) -> std::int16_t
 {
@@ -91,6 +99,8 @@ auto swap_bytes(std::uint16_t value) -> std::uint16_t
 
 #else
 
+#define BYTE_ORDER_SWAP_BYTES_MSG "swap_bytes_default"
+
 auto swap_bytes(std::int16_t value) -> std::int16_t
 {
     return detail::swap_bytes_default(value);
@@ -103,7 +113,7 @@ auto swap_bytes(std::uint16_t value) -> std::uint16_t
 
 #endif
 
-#if (defined(__clang__) && __has_builtin(__builtin_bswap32))
+#if (defined(__clang__) && __has_builtin(__builtin_bswap32)) || (defined(__GNUC__) && IS_REQUIRED_GNUC_VER)
 
 auto swap_bytes(std::int32_t value) -> std::int32_t
 {
@@ -129,7 +139,7 @@ auto swap_bytes(std::uint32_t value) -> std::uint32_t
 
 #endif
 
-#if (defined(__clang__) && __has_builtin(__builtin_bswap64))
+#if (defined(__clang__) && __has_builtin(__builtin_bswap64)) || (defined(__GNUC__) && IS_REQUIRED_GNUC_VER)
 
 auto swap_bytes(std::int64_t value) -> std::int64_t
 {
@@ -161,3 +171,9 @@ auto swap_bytes(double value) -> std::enable_if_t<std::numeric_limits<double>::i
 }
 
 } // namespace byte_order {
+
+#if defined(IS_REQUIRED_GNUC_VER)
+
+#undef IS_REQUIRED_GNUC_VER
+
+#endif
