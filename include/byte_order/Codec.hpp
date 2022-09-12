@@ -1,18 +1,13 @@
 #pragma once
 
 #include "byte_order/ByteOrder.hpp"
+#include "byte_order/SwapBytes.hpp"
 
 #include <cstdint>
 #include <limits>
 #include <type_traits>
 
 namespace byte_order {
-
-template <typename T>
-auto swap_bytes(T value) -> std::enable_if_t<std::has_unique_object_representations_v<T>, T>;
-
-template <typename T>
-auto swap_bytes(T value) -> std::enable_if_t<std::is_same_v<double, T> && std::numeric_limits<double>::is_iec559, T>;
 
 inline void encode_little(std::uint8_t * dst, std::int8_t value);
 inline void encode_little(std::uint8_t * dst, std::uint8_t value);
@@ -82,4 +77,4 @@ auto decode_big(std::uint8_t * src) -> std::enable_if_t<std::is_same_v<T, std::u
 
 } // namespace byte_order {
 
-#include "Codec.inl"
+#include "byte_order/Codec.inl"

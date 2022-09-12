@@ -4,7 +4,8 @@ find_package(GTest CONFIG REQUIRED)
 
 add_executable(byte_order_tests
     ByteOrderTests.cpp
-    CodecTests.cpp)
+    CodecTests.cpp
+    SwapBytesTests.cpp)
 
 add_dependencies(byte_order_tests generated_byte_order_header)
 

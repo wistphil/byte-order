@@ -28,7 +28,9 @@ target_sources(byte_order
     PRIVATE
         ${BYTE_ORDER_FILE}
         include/byte_order/Codec.hpp
-        include/byte_order/Codec.inl)
+        include/byte_order/Codec.inl
+        include/byte_order/SwapBytes.hpp
+        include/byte_order/SwapBytes.inl)
 
 target_include_directories(byte_order
     INTERFACE

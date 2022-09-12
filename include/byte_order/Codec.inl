@@ -49,73 +49,6 @@ struct IsInteger
     static constexpr bool value = IsOneOf<T, std::uint8_t, std::int8_t, std::uint16_t, std::int16_t, std::uint32_t, std::int32_t, std::uint64_t, std::int64_t>::value;
 };
 
-template <typename T>
-auto swap_bytes_impl(T value) ->
-        std::enable_if_t<std::has_unique_object_representations_v<T> || (std::is_same_v<double, T> && std::numeric_limits<double>::is_iec559), T>
-{
-    std::uint8_t input_buf[sizeof(value)];
-    std::memcpy(input_buf, &value, sizeof(value));
-
-    std::uint8_t output_buf[sizeof(value)];
-    std::size_t left{0};
-    for (std::size_t right{sizeof(value)}; right > 0; --right) {
-        output_buf[left++] = input_buf[right - 1];
-    }
-
-    T result{};
-    std::memcpy(&result, output_buf, sizeof(value));
-
-    return result;
-}
-
-#if (defined(__clang__) && __has_builtin(__builtin_bswap16))
-
-inline
-auto swap_bytes_impl(std::int16_t value) -> std::int16_t
-{
-    return static_cast<std::int16_t>(__builtin_bswap16(static_cast<std::uint16_t>(value)));
-}
-
-inline
-auto swap_bytes_impl(std::uint16_t value) -> std::uint16_t
-{
-    return __builtin_bswap16(value);
-}
-
-#endif
-
-#if (defined(__clang__) && __has_builtin(__builtin_bswap32))
-
-inline
-auto swap_bytes_impl(std::int32_t value) -> std::int32_t
-{
-    return static_cast<std::int32_t>(__builtin_bswap32(static_cast<std::uint32_t>(value)));
-}
-
-inline
-auto swap_bytes_impl(std::uint32_t value) -> std::uint32_t
-{
-    return __builtin_bswap32(value);
-}
-
-#endif
-
-#if (defined(__clang__) && __has_builtin(__builtin_bswap64))
-
-inline
-auto swap_bytes_impl(std::int64_t value) -> std::int64_t
-{
-    return static_cast<std::int64_t>(__builtin_bswap64(static_cast<std::uint64_t>(value)));
-}
-
-inline
-auto swap_bytes_impl(std::uint64_t value) -> std::uint64_t
-{
-    return __builtin_bswap64(value);
-}
-
-#endif
-
 template <typename T, typename = std::enable_if_t<IsInteger<T>::value>, typename ByteOrderT, typename = std::enable_if_t<IsByteOrderT<ByteOrderT>::value>>
 void encode(std::uint8_t * dst, T value, ByteOrderT target_byte_order)
 {
@@ -144,18 +77,6 @@ auto decode(std::uint8_t * src, ByteOrderT target_byte_order) -> std::enable_if_
 }
 
 } // namespace detail
-
-template <typename T>
-auto swap_bytes(T value) -> std::enable_if_t<std::has_unique_object_representations_v<T>, T>
-{
-    return detail::swap_bytes_impl(value);
-}
-
-template <typename T>
-auto swap_bytes(T value) -> std::enable_if_t<std::is_same_v<double, T> && std::numeric_limits<double>::is_iec559, T>
-{
-    return detail::swap_bytes_impl(value);
-}
 
 void encode_little(std::uint8_t * dst, std::int8_t value)
 {
