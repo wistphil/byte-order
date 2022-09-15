@@ -75,11 +75,34 @@ inline auto swap_bytes_default(std::uint64_t value) -> std::uint64_t
     return b7 | b6 | b5 | b4 | b3 | b2 | b1 | b0;
 }
 
+template <typename IntegralType, typename T>
+auto swap_as_integral(T value) -> T
+{
+    IntegralType tmp{};
+    std::memcpy(&tmp, &value, sizeof(value));
+    const IntegralType reversed = swap_bytes(tmp);
+    T result{};
+    std::memcpy(&result, &reversed, sizeof(reversed));
+    return result;
+}
+
 } // namespace detail {
 
 template <typename T>
 auto swap_bytes(T value) -> std::enable_if_t<std::has_unique_object_representations_v<T>, T>
 {
+    if constexpr (sizeof(value) == sizeof(std::uint64_t)) {
+        return detail::swap_as_integral<std::uint64_t>(value);
+    }
+    else if constexpr (sizeof(value) == sizeof(std::uint32_t)) {
+        return detail::swap_as_integral<std::uint32_t>(value);
+    }
+    else if constexpr (sizeof(value) == sizeof(std::uint16_t)) {
+        return detail::swap_as_integral<std::uint16_t>(value);
+    }
+    else if constexpr (sizeof(value) == sizeof(std::uint8_t)) {
+        return value;
+    }
     return detail::swap_bytes_default(value);
 }
 
@@ -167,6 +190,9 @@ auto swap_bytes(std::uint64_t value) -> std::uint64_t
 
 auto swap_bytes(double value) -> std::enable_if_t<std::numeric_limits<double>::is_iec559, double>
 {
+    if constexpr (sizeof(value) == sizeof(std::uint64_t)) {
+        return detail::swap_as_integral<std::uint64_t>(value);
+    }
     return detail::swap_bytes_default(value);
 }
 

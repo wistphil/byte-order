@@ -1,5 +1,8 @@
 #pragma once
 
+#include "byte_order/ByteOrder.hpp"
+#include "byte_order/SwapBytes.hpp"
+
 #include <cstring>
 
 namespace byte_order {
@@ -44,15 +47,15 @@ struct IsByteOrderT
 };
 
 template <typename T>
-struct IsInteger
+struct IsSupported
 {
-    static constexpr bool value = IsOneOf<T, std::uint8_t, std::int8_t, std::uint16_t, std::int16_t, std::uint32_t, std::int32_t, std::uint64_t, std::int64_t>::value;
+    static constexpr bool value = IsOneOf<T, std::uint8_t, std::int8_t, std::uint16_t, std::int16_t, std::uint32_t, std::int32_t, std::uint64_t, std::int64_t, double>::value;
 };
 
-template <typename T, typename = std::enable_if_t<IsInteger<T>::value>, typename ByteOrderT, typename = std::enable_if_t<IsByteOrderT<ByteOrderT>::value>>
+template <typename T, typename = std::enable_if_t<IsSupported<T>::value>, typename ByteOrderT, typename = std::enable_if_t<IsByteOrderT<ByteOrderT>::value>>
 void encode(std::uint8_t * dst, T value, ByteOrderT target_byte_order)
 {
-    if constexpr (target_byte_order == ByteOrderNative::value) {
+    if constexpr (target_byte_order == ByteOrderNative::value || sizeof(value) == 1) {
         std::memcpy(dst, &value, sizeof(value));
     }
     else {
@@ -62,10 +65,10 @@ void encode(std::uint8_t * dst, T value, ByteOrderT target_byte_order)
 }
 
 template <typename T, typename ByteOrderT, typename = std::enable_if_t<IsByteOrderT<ByteOrderT>::value>>
-auto decode(std::uint8_t * src, ByteOrderT target_byte_order) -> std::enable_if_t<IsInteger<T>::value, T>
+auto decode(std::uint8_t * src, ByteOrderT target_byte_order) -> std::enable_if_t<IsSupported<T>::value, T>
 {
     T  result{};
-    if constexpr (target_byte_order == ByteOrderNative::value) {
+    if constexpr (target_byte_order == ByteOrderNative::value || sizeof(result) == 1) {
         std::memcpy(&result, src, sizeof(result));
     }
     else {
@@ -118,6 +121,11 @@ void encode_little(std::uint8_t * dst, std::uint64_t value)
     detail::encode(dst, value, detail::ByteOrderLittle{});
 }
 
+auto encode_little(std::uint8_t * dst, double value)  -> std::enable_if_t<std::numeric_limits<double>::is_iec559, void>
+{
+    detail::encode(dst, value, detail::ByteOrderLittle{});
+}
+
 void encode_big(std::uint8_t * dst, std::int8_t value)
 {
     detail::encode(dst, value, detail::ByteOrderBig{});
@@ -154,6 +162,11 @@ void encode_big(std::uint8_t * dst, std::int64_t value)
 }
 
 void encode_big(std::uint8_t * dst, std::uint64_t value)
+{
+    detail::encode(dst, value, detail::ByteOrderBig{});
+}
+
+auto encode_big(std::uint8_t * dst, double value) -> std::enable_if_t<std::numeric_limits<double>::is_iec559, void>
 {
     detail::encode(dst, value, detail::ByteOrderBig{});
 }
@@ -207,6 +220,12 @@ auto decode_little(std::uint8_t * src) -> std::enable_if_t<std::is_same_v<T, std
 }
 
 template <typename T>
+auto decode_little(std::uint8_t * src) -> std::enable_if_t<std::is_same_v<T, double>, T>
+{
+    return detail::decode<T>(src, detail::ByteOrderLittle{});
+}
+
+template <typename T>
 auto decode_big(std::uint8_t * src) -> std::enable_if_t<std::is_same_v<T, std::int8_t>, T>
 {
     return detail::decode<T>(src, detail::ByteOrderBig{});
@@ -250,6 +269,12 @@ auto decode_big(std::uint8_t * src) -> std::enable_if_t<std::is_same_v<T, std::i
 
 template <typename T>
 auto decode_big(std::uint8_t * src) -> std::enable_if_t<std::is_same_v<T, std::uint64_t>, T>
+{
+    return detail::decode<T>(src, detail::ByteOrderBig{});
+}
+
+template <typename T>
+auto decode_big(std::uint8_t * src) -> std::enable_if_t<std::is_same_v<T, double>, T>
 {
     return detail::decode<T>(src, detail::ByteOrderBig{});
 }

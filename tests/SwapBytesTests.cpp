@@ -82,4 +82,46 @@ TEST(SwapBytesTests, swap_bytes_double)
     EXPECT_DOUBLE_EQ(swapped, swap_bytes(val));
 }
 
+TEST(SwapBytesTests, struct_with_two_uint8_t)
+{
+    struct Uint8Pair
+    {
+        std::uint8_t first;
+        std::uint8_t second;
+    };
+
+    Uint8Pair val{0xFF, 0x99};
+    Uint8Pair swapped{0x99, 0xFF};
+
+    auto res = detail::swap_bytes_default(val);
+
+    EXPECT_EQ(swapped.first, res.first);
+    EXPECT_EQ(swapped.second, res.second);
+
+    res = swap_bytes(val);
+    EXPECT_EQ(swapped.first, res.first);
+    EXPECT_EQ(swapped.second, res.second);
+}
+
+TEST(SwapBytesTests, struct_with_two_uint16_t)
+{
+    struct Uint16Pair
+    {
+        std::uint16_t first;
+        std::uint16_t second;
+    };
+
+    Uint16Pair val{0x90AA, 0xBBCC};
+    Uint16Pair swapped{0xCCBB, 0xAA90};
+
+    auto res = detail::swap_bytes_default(val);
+
+    EXPECT_EQ(swapped.first, res.first);
+    EXPECT_EQ(swapped.second, res.second);
+
+    res = swap_bytes(val);
+    EXPECT_EQ(swapped.first, res.first);
+    EXPECT_EQ(swapped.second, res.second);
+}
+
 } // namespace byte_order::tests

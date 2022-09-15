@@ -76,6 +76,17 @@ TEST(CodecTests, encode_decode_little_int64_t)
     EXPECT_EQ(val, decoded);
 }
 
+TEST(CodecTests, encode_decode_little_double)
+{
+    double val{std::numeric_limits<double>::min()};
+    double decoded = encode_decode_little(val);
+    EXPECT_DOUBLE_EQ(val, decoded);
+
+    val = std::numeric_limits<double>::max();
+    decoded = encode_decode_little(val);
+    EXPECT_DOUBLE_EQ(val, decoded);
+}
+
 TEST(CodecTests, encode_decode_little_uint64_t)
 {
     std::uint64_t val{std::numeric_limits<std::uint64_t>::max()};
@@ -137,6 +148,17 @@ TEST(CodecTests, encode_decode_big_uint64_t)
     std::uint64_t val{std::numeric_limits<std::uint64_t>::max()};
     std::uint64_t decoded = encode_decode_big(val);
     EXPECT_EQ(val, decoded);
+}
+
+TEST(CodecTests, encode_decode_big_double)
+{
+    double val{std::numeric_limits<double>::min()};
+    double decoded = encode_decode_big(val);
+    EXPECT_DOUBLE_EQ(val, decoded);
+
+    val = std::numeric_limits<double>::max();
+    decoded = encode_decode_big(val);
+    EXPECT_DOUBLE_EQ(val, decoded);
 }
 
 } // namespace byte_order::tests
