@@ -55,3 +55,22 @@ auto main() -> int
     return 0;
 }
 ```
+## Build using CMake
+Clone and initialize the build directory
+```
+$ git clone https://github.com/wistphil/byte-order.git
+$ cd byte-order/
+$ mkdir build
+```
+Initialize CMake using 'preset' (currently only 'linux' is supported).
+```
+$ cmake --preset linux -DCMAKE_INSTALL_PREFIX=<path to install directory>
+```
+Build
+```
+$ cmake --build build
+``
+Install
+```
+$ cmake --install build/
+```
