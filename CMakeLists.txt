@@ -9,6 +9,7 @@ add_library(byte_order INTERFACE)
 add_library(byte_order::byte_order ALIAS byte_order)
 
 add_subdirectory(tools)
+add_subdirectory(examples)
 
 set(BYTE_ORDER_FILE_PATH ${CMAKE_CURRENT_BINARY_DIR}/include/byte_order)
 set(BYTE_ORDER_FILE ${BYTE_ORDER_FILE_PATH}/ByteOrder.hpp)
