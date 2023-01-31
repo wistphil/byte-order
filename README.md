@@ -55,6 +55,12 @@ auto main() -> int
     return 0;
 }
 ```
+Sample output:
+```
+Byte Order is little
+encoded 0x1a2b3c4d in little endian: 0x4d3c2b1a
+decoded little endian value 1a2b3c4d
+```
 ## Build using CMake
 Clone and initialize the build directory
 ```
@@ -68,8 +74,8 @@ $ cmake --preset linux -DCMAKE_INSTALL_PREFIX=<path to install directory>
 ```
 Build
 ```
-$ cmake --build build
-``
+$ cmake --build build/
+```
 Install
 ```
 $ cmake --install build/
