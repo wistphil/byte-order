@@ -22,7 +22,7 @@ auto decode_little(std::uint8_t * src) -> std::enable_if_t<std::is_same_v<T, std
 template <typename T>
 auto decode_big(std::uint8_t * src) -> std::enable_if_t<std::is_same_v<T, std::int32_t>, T>;
 ```
-Example
+### Example
 ```cpp
 #include "byte_order/ByteOrder.hpp"
 #include "byte_order/Codec.hpp"
@@ -73,11 +73,11 @@ Initialize CMake using 'preset' (currently only 'linux' is supported).
 $ cmake --preset linux --install-prefix <path to install directory>
 ```
 Note that `--install-prefix` is only needed if building this project stand-alone and plan on importing the project with `FindPackage()`. It is not necessary if consuming this library as a sub project (with FetchContent).
-Build
+### Build
 ```
 $ cmake --build build/
 ```
-Install
+### Install
 ```
 $ cmake --install build/
 ```
