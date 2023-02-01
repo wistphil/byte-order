@@ -70,8 +70,9 @@ $ mkdir build
 ```
 Initialize CMake using 'preset' (currently only 'linux' is supported).
 ```
-$ cmake --preset linux -DCMAKE_INSTALL_PREFIX=<path to install directory>
+$ cmake --preset linux --install-prefix <path to install directory>
 ```
+Note that `--install-prefix` is only needed if building this project stand-alone and plan on importing the project with `FindPackage()`. It is not necessary if consuming this library as a sub project (with FetchContent).
 Build
 ```
 $ cmake --build build/
@@ -79,4 +80,19 @@ $ cmake --build build/
 Install
 ```
 $ cmake --install build/
+```
+### Importing with FindPackage
+In the project that depends on byte-order, include the directory to where byte-order is installed in the `CMAKE_PREFIX_PATH`. For example,
+```
+$ cmake Ninja -DCMAKE_PREFIX_PATH=<path to where byte-order is installed> -DCMAKE_CXX_STANDARD=17 -S . -B build/
+```
+Use `FindPackage()` in your CMakeLists.txt
+```
+find_package(byte_order REQUIRED)
+
+...
+
+target_link_libraries(my_proj
+    PRIVATE
+        byte_order::byte_order)
 ```

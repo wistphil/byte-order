@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.14)
 project(byte-order-example LANGUAGES CXX)
 
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}" is_top_level)
