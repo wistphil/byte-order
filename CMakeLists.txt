@@ -8,22 +8,32 @@ string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}" is_top_level)
 add_library(byte_order INTERFACE)
 add_library(byte_order::byte_order ALIAS byte_order)
 
-add_subdirectory(tools)
 add_subdirectory(examples)
 
-set(BYTE_ORDER_FILE_PATH ${CMAKE_CURRENT_BINARY_DIR}/include/byte_order)
-set(BYTE_ORDER_FILE ${BYTE_ORDER_FILE_PATH}/ByteOrder.hpp)
+if (BYTE_ORDER_GENERATE_BYTE_ORDER_HEADER)
+    add_subdirectory(tools)
 
-add_custom_command(
-    OUTPUT ${BYTE_ORDER_FILE}
-    COMMAND cmake -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/tools/etc ${CMAKE_CURRENT_BINARY_DIR}/tools/etc
-    COMMAND cmake -E make_directory ${BYTE_ORDER_FILE_PATH}
-    COMMAND generate_byte_order_header > ${BYTE_ORDER_FILE}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tools
-    DEPENDS generate_byte_order_header)
+    set(BYTE_ORDER_FILE_PATH ${CMAKE_CURRENT_BINARY_DIR}/include/byte_order)
+    set(BYTE_ORDER_FILE ${BYTE_ORDER_FILE_PATH}/ByteOrder.hpp)
 
-add_custom_target(generated_byte_order_header DEPENDS ${BYTE_ORDER_FILE})
-add_dependencies(byte_order generated_byte_order_header)
+    add_custom_command(
+        OUTPUT ${BYTE_ORDER_FILE}
+        COMMAND cmake -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/tools/etc ${CMAKE_CURRENT_BINARY_DIR}/tools/etc
+        COMMAND cmake -E make_directory ${BYTE_ORDER_FILE_PATH}
+        COMMAND generate_byte_order_header > ${BYTE_ORDER_FILE}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tools
+        DEPENDS generate_byte_order_header)
+
+    add_custom_target(generated_byte_order_header DEPENDS ${BYTE_ORDER_FILE})
+    add_dependencies(byte_order generated_byte_order_header)
+else()
+    set(DETECTED_BYTE_ORDER "Unknown")
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools/etc/ByteOrder.hpp.in
+        ${CMAKE_CURRENT_BINARY_DIR}/include/byte_order/ByteOrder.hpp
+        @ONLY)
+endif()
+
 
 target_sources(byte_order
     PRIVATE

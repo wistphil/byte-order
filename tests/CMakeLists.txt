@@ -7,7 +7,9 @@ add_executable(byte_order_tests
     CodecTests.cpp
     SwapBytesTests.cpp)
 
-add_dependencies(byte_order_tests generated_byte_order_header)
+if (BYTE_ORDER_GENERATE_BYTE_ORDER_HEADER)
+    add_dependencies(byte_order_tests generated_byte_order_header)
+endif()
 
 target_link_libraries(byte_order_tests
     PRIVATE
